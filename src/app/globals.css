@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@theme {
+  /*
+   * Their real showroom: a taupe/mocha wall, a diagonal-cut honey wood
+   * panel, a near-black polished floor and a neon gold sign. Gold-on-black
+   * as a WHOLE identity belongs to 02, so the ground is taken from the
+   * room's floor rather than the sign, and gold survives only as a rare,
+   * restricted accent — the mark, the sign itself, and the moment the
+   * hidden 42-month constant resolves.
+   */
+  --color-ground: #0d0c0a;   /* their polished floor */
+  --color-panel: #211a12;    /* raised cards, a step up from the floor */
+  --color-cream: #f3ede3;    /* primary text, 16.3:1 on ground */
+  --color-muted: #c9bfaf;    /* secondary text, 10.4:1 on ground */
+  --color-wood: #a8703a;     /* their wood panel, lifted for use as a fill */
+  --color-gold: #fdc941;     /* their neon sign, measured — restricted accent */
+
+  --font-display: var(--font-libre-franklin), Arial, sans-serif;
+  --font-body: var(--font-source-sans), system-ui, sans-serif;
+  --font-arabic-display: var(--font-amiri-quran), "Traditional Arabic", serif;
+  --font-arabic-body: var(--font-ibm-plex-arabic), system-ui, sans-serif;
+
+  --text-hero: clamp(2.2rem, 5.2vw, 4.4rem);
+  --text-display: clamp(1.5rem, 3vw, 2.4rem);
+  --text-lead: clamp(1rem, 1.15vw, 1.14rem);
+}
+
+@layer base {
+  section[id] { scroll-margin-top: 5.5rem; }
+
+  html {
+    background: var(--color-ground);
+    color: var(--color-cream);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: auto;
+    overflow-x: clip;
+  }
+
+  body { font-family: var(--font-body); overflow-x: clip; }
+  html[dir="rtl"] body { font-family: var(--font-arabic-body); }
+
+  ::selection { background: var(--color-gold); color: var(--color-ground); }
+  :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility font-display { font-family: var(--font-display); }
+html[dir="rtl"] .font-display { font-family: var(--font-arabic-display); }
+
+@utility sign {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+html[dir="rtl"] .sign {
+  font-family: var(--font-arabic-display);
+  font-weight: 400; /* Amiri Quran ships one weight; no synthetic bold */
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.6;
+}
+
+/* A Latin wordmark and any marque/model heading stays in the Latin display
+   face in both locales -- the Arabic display face ships Latin glyphs of its
+   own and would render the brand, or a Chery model code, in the wrong voice. */
+@utility signmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  unicode-bidi: plaintext;
+}
+
+@utility label {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+html[dir="rtl"] .label {
+  font-family: var(--font-arabic-body);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.86rem;
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+@utility arabic { font-family: var(--font-arabic-body); }
+
+/* ---------------------------------------------------------------------------
+ * Motion signature: THE BALANCE.
+ *
+ * Every published plan on this page is two options in tension -- a lower
+ * down payment against a higher instalment, or the reverse -- that resolve
+ * to the same answer. So content arrives the same way: alternating blocks
+ * slide in from opposite sides and settle flat in the centre, with no
+ * overshoot, the way two sides of a ledger square up rather than the way
+ * anything falls, rolls or turns elsewhere in this series.
+ *
+ * `[data-balance]` is the OUTER element an IntersectionObserver watches;
+ * `[data-balance-item]` children carry `--balance-i` (their index) and
+ * animate off it, so a transform on the observed element never moves its
+ * own intersection rectangle mid-reveal.
+ * ------------------------------------------------------------------------ */
+
+@keyframes balance-in {
+  from { opacity: 0; transform: translateX(var(--balance-from, -28px)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+[data-balance-item] {
+  --balance-from: -28px;
+  opacity: 0;
+}
+[data-balance-item]:nth-child(even) { --balance-from: 28px; }
+[data-balance][data-seen] [data-balance-item] {
+  animation: balance-in 560ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: calc(var(--balance-i, 0) * 70ms);
+}
+html[dir="rtl"] [data-balance-item] { --balance-from: 28px; }
+html[dir="rtl"] [data-balance-item]:nth-child(even) { --balance-from: -28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-balance-item] { opacity: 1; transform: none; animation: none; }
+}
+
+.hard-cut { transition: none !important; }
+
+/* ---------------------------------------------------------------------------
+ * Arabic corrections. Keyed off [dir], never [lang]; unlayered so they
+ * outrank Tailwind utilities.
+ * ------------------------------------------------------------------------ */
+
+html[dir="ltr"] .text-hero { line-height: 0.98; }
+html[dir="rtl"] .text-hero {
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  line-height: 1.5;
+  font-weight: 800;
+}
+html[dir="ltr"] .text-display { line-height: 1.05; }
+html[dir="rtl"] .text-display {
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  line-height: 1.5;
+  font-weight: 800;
+}
+
+html[dir="rtl"] [class*="tracking-["],
+html[dir="rtl"] .tracking-widest,
+html[dir="rtl"] .tracking-wider { letter-spacing: 0; }
+
+.fine { font-size: 0.79rem; line-height: 1.65; }
+html[dir="rtl"] .fine { font-size: 0.92rem; line-height: 1.95; }
+
+html[dir="rtl"] .text-lead { font-size: clamp(1.05rem, 1.2vw, 1.2rem); line-height: 2; }
+
+.m-hero { max-width: 15ch; }
+html[dir="rtl"] .m-hero { max-width: 22ch; }
+.m-head { max-width: 26ch; }
+html[dir="rtl"] .m-head { max-width: 34ch; }
+
+.chip {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.66rem;
+  font-weight: 700;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] .chip-loc {
+  font-family: var(--font-arabic-body);
+  letter-spacing: 0;
+  font-size: 0.82rem;
+}
+
+/* three.js writes an inline pixel size onto the canvas from whatever its
+   container measured when the renderer last sized itself; a later layout
+   pass leaves that size stale and the canvas overhangs its parent. Inline
+   styles outrank the sheet, so this has to be !important. */
+.rails-host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bidi { unicode-bidi: plaintext; }
+html[dir="rtl"] .bidi { text-align: right; }
+html[dir="ltr"] .bidi { text-align: left; }
+
+.latin {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+html[dir="rtl"] .latin { text-align: right; }

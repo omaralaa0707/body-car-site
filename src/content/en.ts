@@ -94,8 +94,7 @@ export const en: BodyCarContent = {
   },
 
   footer: {
-    disclaimer: "A concept design, built as a demonstration. Not an official Body Car site and not affiliated with them or with Ahmed Mostafa. All photography, marks and quoted copy belong to Body Car; captions and prices are quoted as published.",
-    rights: "Concept by Claude",
+    rights: "© Body Car. All rights reserved.",
   },
 
   a11y: {
